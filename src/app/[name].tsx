@@ -31,7 +31,7 @@ export default function ExerciseDetailsScrean() {
           }}
           style={{ padding: 10, alignSelf: "center", fontWeight: "500" }}
         >
-          {isInstructionExpanded === false ? "Zobacz Więcej" : "Zobacz Mniej"}
+          {isInstructionExpanded === false ? "Zobacz Więcej " : "Zobacz Mniej"}
         </Text>
       </View>
     </ScrollView>

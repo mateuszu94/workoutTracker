@@ -12,7 +12,7 @@ interface ExerciseListItemProps {
 export const ExerciseListItem: React.FC<ExerciseListItemProps> = ({ item }) => {
   return (
     <Link href={`${item.name}`} asChild>
-      <Pressable style={styles.exerciseCointeiner}>
+      <Pressable className="flex-1 items-center justify-center bg-black">
         <Text style={styles.exercisesName}>{item.name}</Text>
         <Text style={styles.exerciseSubtitle}>
           {item.muscle.toUpperCase()} | {item.equipment.toUpperCase()}
