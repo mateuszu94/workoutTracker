@@ -3,7 +3,7 @@ import { TouchableOpacity, Text } from "react-native";
 interface TabIconProps {
   hendlePress: any;
   title: string;
-  isLoading: boolean;
+  isLoading?: boolean;
   containerStyles?: string;
   TextStyles?: string;
 }

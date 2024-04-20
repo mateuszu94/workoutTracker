@@ -3,7 +3,7 @@ import { Image, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { icons } from "../../constants";
 import CustomButton from "../components/CustomButton";
-import { Redirect, router } from "expo-router";
+import { router } from "expo-router";
 
 export default function App() {
   return (
@@ -27,6 +27,12 @@ export default function App() {
           <CustomButton
             title="Zaloguj się"
             hendlePress={() => router.push("/sign-in")}
+            containerStyles="w-full mt-8"
+            isLoading={false}
+          />
+          <CustomButton
+            title="Kontynuuj bez logowania"
+            hendlePress={() => router.push("/home")}
             containerStyles="w-full mt-8"
             isLoading={false}
           />

@@ -55,7 +55,7 @@ const SignIn = () => {
               Nie masz Konta ?
             </Text>
             <Link
-              href={"/sing-up"}
+              href={"/sign-up"}
               className="text-lg text-accent font-pregular"
             >
               Zarejstruj Się

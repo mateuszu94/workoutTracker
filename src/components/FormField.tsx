@@ -27,6 +27,7 @@ const FormField: React.FC<FormFieldProps> = ({
   keyboardType,
 }) => {
   const [showEntry, setShowEntry] = useState(false);
+
   return (
     <View className={`space-y-2 ${otherStyles}`}>
       <Text className="text-base text-gray-200 font-pmedium">{title}</Text>

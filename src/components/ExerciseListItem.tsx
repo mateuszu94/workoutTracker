@@ -1,48 +1,57 @@
 import React from "react";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 import { Link } from "expo-router";
+import { icons } from "@/constants";
+import { useRealm } from "@realm/react";
+import { UserExercise } from "../models/userExercise";
+
 interface ExerciseListItemProps {
+  userWorkout: any;
   item: {
     name: string;
     muscle: string;
     equipment: string;
+    instructions: string;
   };
 }
 
-export const ExerciseListItem: React.FC<ExerciseListItemProps> = ({ item }) => {
+export const ExerciseListItem: React.FC<ExerciseListItemProps> = ({
+  item,
+  userWorkout,
+}) => {
+  const realm = useRealm();
+  const createExercise = () => {
+    realm.write(() => {
+      realm.create(UserExercise, {
+        name: item.name,
+        muscle: item.muscle,
+        instructions: item.instructions,
+        equipment: item.equipment,
+      });
+    });
+  };
   return (
-    <Link href={`${item.name}`} asChild>
-      <Pressable className="flex-1 items-center justify-center bg-black">
-        <Text style={styles.exercisesName}>{item.name}</Text>
-        <Text style={styles.exerciseSubtitle}>
-          {item.muscle.toUpperCase()} | {item.equipment.toUpperCase()}
-        </Text>
+    <View className="flex flex-row justify-center items-center m-2   ">
+      <Link href={`search/${item.name}`} asChild>
+        <Pressable className="flex-1 ">
+          <Text className="text-white text-2xl">{item.name}</Text>
+          <Text className="text-gray-300 ">
+            {item.muscle.toUpperCase()} | {item.equipment.toUpperCase()}
+          </Text>
+        </Pressable>
+      </Link>
+      <Pressable
+        className={`mr-2  `}
+        onPress={createExercise}
+        disabled={userWorkout.length === 0 ? true : false}
+      >
+        <Image
+          source={icons.plus}
+          className="w-10 h-10  "
+          resizeMode="contain"
+          tintColor={userWorkout.length === 0 ? "#CE081D" : "#29CE08"}
+        ></Image>
       </Pressable>
-    </Link>
+    </View>
   );
 };
-
-const styles = StyleSheet.create({
-  exercisesName: {
-    fontSize: 20,
-    fontWeight: "500",
-  },
-  exerciseSubtitle: {
-    fontSize: 10,
-    color: "slategray",
-  },
-  exerciseCointeiner: {
-    shadowColor: "#000000",
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
-    shadowOpacity: 0.21,
-    shadowRadius: 6.65,
-    elevation: 9,
-    backgroundColor: "navajowhite",
-    padding: 10,
-    borderRadius: 10,
-    gap: 5,
-  },
-});
