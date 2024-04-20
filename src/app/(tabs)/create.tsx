@@ -10,11 +10,11 @@ import CustomButton from "@/src/components/CustomButton";
 import { useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import FormField from "@/src/components/FormField";
+import DropDownSelect from "@/src/components/DropDownSelect";
 
 const Create = () => {
   const userWorkout = useQuery(Workout);
-  const [isOpen, setIsOpen] = useState(false);
-  const [currentValue, setCurrentValue] = useState("");
+  const [currentValue, setCurrentValue] = useState(userWorkout[0].name);
   const [modalVisible, setModalVisible] = useState(false);
   const [workoutName, setWorkoutName] = useState("");
   const realm = useRealm();
@@ -74,7 +74,7 @@ const Create = () => {
         )}
         ListHeaderComponent={() => (
           <View className="my-6 px-4 space-y-6">
-            <View className="justify-between items-start flex-row mb-6">
+            <View className="justify-between items-start flex-row ">
               <View className="w-full">
                 {userWorkout.length === 0 ? (
                   <View>
@@ -89,13 +89,25 @@ const Create = () => {
                   </View>
                 ) : (
                   <View>
-                    <Text className="font-pmedium text-2xl text-gray-100">
-                      Dodaj ćwiczenia
+                    <Text className="font-pmedium text-2xl m-2 text-gray-100">
+                      Trenning
                     </Text>
+                    <DropDownSelect
+                      items={userWorkout}
+                      currentValue={currentValue}
+                      setCurrentValue={setCurrentValue}
+                      onAddNew={() => {
+                        setModalVisible(true);
+                      }}
+                    />
                   </View>
                 )}
               </View>
             </View>
+
+            <Text className="font-pmedium text-2xl text-gray-100">
+              Dodaj ćwiczenia
+            </Text>
             <SerchInput />
           </View>
         )}
