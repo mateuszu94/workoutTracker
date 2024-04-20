@@ -2,11 +2,14 @@ import React from "react";
 import { Image, Pressable, Text, View } from "react-native";
 import { Link } from "expo-router";
 import { icons } from "@/constants";
-import { useRealm } from "@realm/react";
+import { useObject, useQuery, useRealm } from "@realm/react";
 import { UserExercise } from "../models/userExercise";
+import { Workout } from "../models/Workout";
+import { BSON } from "realm";
 
 interface ExerciseListItemProps {
   userWorkout: any;
+  currentValue: { name: string; id: any };
   item: {
     name: string;
     muscle: string;
@@ -18,16 +21,27 @@ interface ExerciseListItemProps {
 export const ExerciseListItem: React.FC<ExerciseListItemProps> = ({
   item,
   userWorkout,
+  currentValue,
 }) => {
+  const userExercise = useQuery(UserExercise);
   const realm = useRealm();
   const createExercise = () => {
+    if (currentValue.id === "") {
+      return;
+    }
+    const workout = useObject<Workout>(
+      Workout,
+      new BSON.ObjectID(currentValue.id as string)
+    );
     realm.write(() => {
-      realm.create(UserExercise, {
-        name: item.name,
-        muscle: item.muscle,
-        instructions: item.instructions,
-        equipment: item.equipment,
-      });
+      if (userExercise.length === 0) {
+        realm.create(UserExercise, {
+          name: item.name,
+          muscle: item.muscle,
+          instructions: item.instructions,
+          equipment: item.equipment,
+        });
+      }
     });
   };
   return (

@@ -14,7 +14,18 @@ import DropDownSelect from "@/src/components/DropDownSelect";
 
 const Create = () => {
   const userWorkout = useQuery(Workout);
-  const [currentValue, setCurrentValue] = useState(userWorkout[0].name);
+
+  const [currentValue, setCurrentValue] = useState(
+    userWorkout.length !== 0
+      ? {
+          name: userWorkout[0].name,
+          id: userWorkout[0]._id,
+        }
+      : {
+          name: "",
+          id: "",
+        }
+  );
   const [modalVisible, setModalVisible] = useState(false);
   const [workoutName, setWorkoutName] = useState("");
   const realm = useRealm();
@@ -31,6 +42,14 @@ const Create = () => {
         });
       });
       setModalVisible(false);
+      setWorkoutName("");
+      const newWorkout = userWorkout.filter(
+        (workout) => workout.name === workoutName
+      );
+      setCurrentValue({
+        name: newWorkout[0].name,
+        id: newWorkout[0]._id,
+      });
     }
   };
 
@@ -68,8 +87,9 @@ const Create = () => {
         keyExtractor={(exercises) => exercises.name}
         renderItem={({ item }) => (
           <ExerciseListItem
-            item={item}
             userWorkout={userWorkout}
+            item={item}
+            currentValue={currentValue}
           ></ExerciseListItem>
         )}
         ListHeaderComponent={() => (
@@ -93,7 +113,6 @@ const Create = () => {
                       Trenning
                     </Text>
                     <DropDownSelect
-                      items={userWorkout}
                       currentValue={currentValue}
                       setCurrentValue={setCurrentValue}
                       onAddNew={() => {

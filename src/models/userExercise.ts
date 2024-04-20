@@ -8,7 +8,7 @@ export class UserExercise extends Realm.Object<UserExercise> {
   muscle!: string;
   instructions!: string;
   url: string = "";
-  exercises?: Exercise[];
+  exercises: Exercise[] = [];
   equipment!: string;
 
   static primaryKey = "_id";

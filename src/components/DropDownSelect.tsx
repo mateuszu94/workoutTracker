@@ -2,23 +2,27 @@ import { View, Text, TouchableOpacity, Modal } from "react-native";
 import React, { useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
 
+import { Workout } from "../models/Workout";
+import { useQuery } from "@realm/react";
+
 interface DropDownSelectProps {
   onAddNew?: any;
-  items: any;
-  currentValue: string;
+
+  currentValue: { name: string; id: any };
   className?: string;
-  setCurrentValue: (value: string) => void;
+  setCurrentValue: any;
 }
 const DropDownSelect: React.FC<DropDownSelectProps> = ({
   onAddNew,
-  items,
+
   currentValue,
   setCurrentValue,
   className,
 }) => {
   const [open, setOpen] = useState(false);
-  const onItemPress = (e: string) => {
-    setCurrentValue(e);
+  const userWorkout = useQuery(Workout);
+  const onItemPress = (name: string, id: any) => {
+    setCurrentValue({ name: name, id: id });
     setOpen(false);
   };
   const addNew = () => {
@@ -32,11 +36,11 @@ const DropDownSelect: React.FC<DropDownSelectProps> = ({
       }
     >
       <TouchableOpacity
-        onPress={() => setOpen(true)}
+        onPress={() => setOpen(!open)}
         className="flex flex-row items-center justify-center relative"
       >
         <View>
-          <Text className="text-2xl text-gray-300">{currentValue}</Text>
+          <Text className="text-2xl text-gray-300">{currentValue.name}</Text>
         </View>
         <View className="absolute right-5">
           <AntDesign name="down" size={24} color="white" />
@@ -44,22 +48,22 @@ const DropDownSelect: React.FC<DropDownSelectProps> = ({
       </TouchableOpacity>
 
       <Modal
-        className=""
+        className=" bg-white opacity-5 pointer-events-none"
         transparent={true}
         visible={open}
         onRequestClose={() => {
           setOpen(!open);
         }}
       >
-        <View className="relative  w-full h-full top-[18%]">
+        <View className="relative  1/2 h-1/2 top-[18%]">
           <View className="w-full border bg-primary border-accent rounded-2xl">
             <TouchableOpacity onPress={addNew}>
               <Text className="text-2xl text-gray-300 p-2 ">Dodaj Nowy + </Text>
             </TouchableOpacity>
 
-            {items.map((item: { name: string }) => (
+            {userWorkout.map((item) => (
               <TouchableOpacity
-                onPress={() => onItemPress(item.name)}
+                onPress={() => onItemPress(item.name, item._id)}
                 key={item.name}
               >
                 <View className="border-t border-accent"></View>
