@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, Pressable, Text, View } from "react-native";
+import { Image, Pressable, Text, ToastAndroid, View } from "react-native";
 import { Link } from "expo-router";
 import { icons } from "@/constants";
 import { useObject, useQuery, useRealm } from "@realm/react";
@@ -8,7 +8,6 @@ import { Workout } from "../models/Workout";
 import { BSON } from "realm";
 
 interface ExerciseListItemProps {
-  userWorkout: any;
   currentValue: { name: string; id: any };
   item: {
     name: string;
@@ -20,29 +19,58 @@ interface ExerciseListItemProps {
 
 export const ExerciseListItem: React.FC<ExerciseListItemProps> = ({
   item,
-  userWorkout,
   currentValue,
 }) => {
-  const userExercise = useQuery(UserExercise);
-  const realm = useRealm();
-  const createExercise = () => {
-    if (currentValue.id === "") {
-      return;
-    }
-    const workout = useObject<Workout>(
+  let workout = null;
+
+  if (currentValue.id !== "") {
+    workout = useObject<Workout>(
       Workout,
       new BSON.ObjectID(currentValue.id as string)
     );
+  }
+  const showToastWithGravity = () => {
+    ToastAndroid.showWithGravity(
+      "Ćwiczenie Zostało dodane",
+      ToastAndroid.SHORT,
+      ToastAndroid.TOP
+    );
+  };
+
+  const userExercises = useQuery(UserExercise);
+  const realm = useRealm();
+  const createExercise = () => {
+    if (!workout) {
+      return;
+    }
     realm.write(() => {
-      if (userExercise.length === 0) {
+      if (userExercises.length === 0) {
         realm.create(UserExercise, {
           name: item.name,
           muscle: item.muscle,
           instructions: item.instructions,
           equipment: item.equipment,
         });
+      } else {
+        const userEsxercisetoAdd = userExercises.filter(
+          (userExercise) => userExercise.name === item.name
+        );
+        if (userEsxercisetoAdd.length === 0) {
+          realm.create(UserExercise, {
+            name: item.name,
+            muscle: item.muscle,
+            instructions: item.instructions,
+            equipment: item.equipment,
+          });
+        }
       }
+      const userEsxercisetoAdd = userExercises.filter(
+        (userExercise) => userExercise.name === item.name
+      );
+
+      workout.exercises.push(userEsxercisetoAdd[0]);
     });
+    showToastWithGravity();
   };
   return (
     <View className="flex flex-row justify-center items-center m-2   ">
@@ -57,13 +85,13 @@ export const ExerciseListItem: React.FC<ExerciseListItemProps> = ({
       <Pressable
         className={`mr-2  `}
         onPress={createExercise}
-        disabled={userWorkout.length === 0 ? true : false}
+        disabled={currentValue.id === "" ? true : false}
       >
         <Image
           source={icons.plus}
           className="w-10 h-10  "
           resizeMode="contain"
-          tintColor={userWorkout.length === 0 ? "#CE081D" : "#29CE08"}
+          tintColor={currentValue.id === "" ? "#CE081D" : "#29CE08"}
         ></Image>
       </Pressable>
     </View>

@@ -6,5 +6,6 @@ export class Exercise extends Realm.Object<Exercise> {
   createdAt: Date = new Date();
   weight!: number;
   repetitions!: number;
+  userExercise: string = "";
   static primaryKey = "_id";
 }

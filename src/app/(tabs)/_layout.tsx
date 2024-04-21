@@ -1,6 +1,7 @@
 import { View, Text, Image } from "react-native";
-import { Tabs, Redirect } from "expo-router";
+import { Tabs } from "expo-router";
 import { icons } from "../../../constants";
+
 interface TabIconProps {
   icon: any;
   color: string;
@@ -61,7 +62,7 @@ const _layout = () => {
         <Tabs.Screen
           name="workout"
           options={{
-            title: "Workout",
+            title: "Workouts",
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon

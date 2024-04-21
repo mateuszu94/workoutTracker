@@ -1,4 +1,12 @@
-import { View, Text, FlatList, Modal, Pressable, Alert } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  Modal,
+  Pressable,
+  Alert,
+  StyleSheet,
+} from "react-native";
 
 import { ExerciseListItem } from "@/src/components/ExerciseListItem";
 import exercises from "../../../assets/data/exercises.json";
@@ -10,10 +18,18 @@ import CustomButton from "@/src/components/CustomButton";
 import { useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import FormField from "@/src/components/FormField";
-import DropDownSelect from "@/src/components/DropDownSelect";
+import { Dropdown } from "react-native-element-dropdown";
 
 const Create = () => {
   const userWorkout = useQuery(Workout);
+
+  let data = [{ label: "", value: "" }];
+  if (userWorkout.length !== 0) {
+    data = [];
+    userWorkout.map((workout) => {
+      data.push({ label: workout.name, value: workout.name });
+    });
+  }
 
   const [currentValue, setCurrentValue] = useState(
     userWorkout.length !== 0
@@ -26,9 +42,21 @@ const Create = () => {
           id: "",
         }
   );
+
   const [modalVisible, setModalVisible] = useState(false);
   const [workoutName, setWorkoutName] = useState("");
   const realm = useRealm();
+  console.log(currentValue);
+  //
+  // start of the functions
+  //
+  const handleWorkoutSelectedChange = (e: string) => {
+    const index = userWorkout.findIndex((obj) => obj.name.trim() === e);
+    setCurrentValue({
+      name: userWorkout[index].name,
+      id: userWorkout[index]._id,
+    });
+  };
 
   const hendleWorkoutNameChange = (e: string) => {
     setWorkoutName(e);
@@ -87,7 +115,6 @@ const Create = () => {
         keyExtractor={(exercises) => exercises.name}
         renderItem={({ item }) => (
           <ExerciseListItem
-            userWorkout={userWorkout}
             item={item}
             currentValue={currentValue}
           ></ExerciseListItem>
@@ -109,14 +136,29 @@ const Create = () => {
                   </View>
                 ) : (
                   <View>
-                    <Text className="font-pmedium text-2xl m-2 text-gray-100">
-                      Trenning
-                    </Text>
-                    <DropDownSelect
-                      currentValue={currentValue}
-                      setCurrentValue={setCurrentValue}
-                      onAddNew={() => {
-                        setModalVisible(true);
+                    <Pressable
+                      onPress={() => setModalVisible(true)}
+                      className=" flex flex-row gap-4 my-2 items-center "
+                    >
+                      <Text className="font-pmedium text-2xl  text-gray-100">
+                        Trenning
+                      </Text>
+
+                      <AntDesign name="plussquareo" color="#F57D1F" size={40} />
+                    </Pressable>
+
+                    <Dropdown
+                      style={styles.dropdown}
+                      inputSearchStyle={styles.inputSearchStyle}
+                      placeholderStyle={styles.placeholderStyle}
+                      selectedTextStyle={styles.selectedTextStyle}
+                      data={data}
+                      labelField="label"
+                      valueField="value"
+                      placeholder={currentValue.name}
+                      searchPlaceholder="Search..."
+                      onChange={(item) => {
+                        handleWorkoutSelectedChange(item.value);
                       }}
                     />
                   </View>
@@ -136,3 +178,30 @@ const Create = () => {
 };
 
 export default Create;
+
+const styles = StyleSheet.create({
+  placeholderStyle: {
+    fontSize: 24,
+    color: "white",
+  },
+  selectedTextStyle: {
+    fontSize: 24,
+    fontStyle: "italic",
+    fontWeight: "bold",
+    color: "white",
+  },
+  dropdown: {
+    backgroundColor: "#161622",
+    marginTop: 10,
+    height: 30,
+    borderColor: "#5F5D9C",
+    borderWidth: 1,
+    padding: 20,
+    borderRadius: 10,
+    left: 0,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 24,
+  },
+});

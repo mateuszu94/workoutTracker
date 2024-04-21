@@ -1,5 +1,4 @@
 import { BSON, Realm } from "realm";
-
 import { UserExercise } from "./userExercise";
 
 export class Workout extends Realm.Object<Workout> {
@@ -7,6 +6,6 @@ export class Workout extends Realm.Object<Workout> {
   user: string = "";
   name!: string;
   createdAt: Date = new Date();
-  exercises?: UserExercise[];
+  exercises!: Realm.List<UserExercise>;
   static primaryKey = "_id";
 }
