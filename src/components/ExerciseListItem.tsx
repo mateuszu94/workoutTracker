@@ -9,6 +9,7 @@ import { BSON } from "realm";
 
 interface ExerciseListItemProps {
   currentValue: { name: string; id: any };
+
   item: {
     name: string;
     muscle: string;
@@ -38,6 +39,7 @@ export const ExerciseListItem: React.FC<ExerciseListItemProps> = ({
   };
 
   const userExercises = useQuery(UserExercise);
+
   const realm = useRealm();
   const createExercise = () => {
     if (!workout) {
@@ -73,7 +75,7 @@ export const ExerciseListItem: React.FC<ExerciseListItemProps> = ({
     showToastWithGravity();
   };
   return (
-    <View className="flex flex-row justify-center items-center m-2   ">
+    <View className="flex flex-row justify-center  items-center mx-4 my-2   ">
       <Link href={`search/${item.name}`} asChild>
         <Pressable className="flex-1 ">
           <Text className="text-white text-2xl">{item.name}</Text>
@@ -87,12 +89,14 @@ export const ExerciseListItem: React.FC<ExerciseListItemProps> = ({
         onPress={createExercise}
         disabled={currentValue.id === "" ? true : false}
       >
-        <Image
-          source={icons.plus}
-          className="w-10 h-10  "
-          resizeMode="contain"
-          tintColor={currentValue.id === "" ? "#CE081D" : "#29CE08"}
-        ></Image>
+        <View className="bg-secondary-100 m-1 p-2 rounded-xl border border-accent">
+          <Image
+            source={icons.plus}
+            className="w-10 h-10   "
+            resizeMode="contain"
+            tintColor={"black"}
+          ></Image>
+        </View>
       </Pressable>
     </View>
   );

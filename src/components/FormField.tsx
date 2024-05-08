@@ -15,6 +15,8 @@ interface FormFieldProps {
   keyboardType?: KeyboardTypeOptions;
   placeholder?: string;
   otherStyles?: string;
+  otherInputStyles?: string;
+  otherTitleStyles?: string;
   handleChangeText: any;
 }
 
@@ -24,15 +26,21 @@ const FormField: React.FC<FormFieldProps> = ({
   placeholder,
   handleChangeText,
   otherStyles,
+  otherInputStyles,
   keyboardType,
+  otherTitleStyles,
 }) => {
   const [showEntry, setShowEntry] = useState(false);
 
   return (
-    <View className={`space-y-2 ${otherStyles}`}>
-      <Text className="text-base text-gray-200 font-pmedium">{title}</Text>
+    <View className={`space-y-2 mx-2 ${otherStyles}`}>
+      <Text
+        className={`text-base text-gray-200 font-pmedium ${otherTitleStyles}`}
+      >
+        {title}
+      </Text>
       <View
-        className="w-full h-16 border-2 border-accent rounded-xl
+        className="w-full h-16 border-2 border-accent rounded-xl 
        focus:border-secondary-100 bg-black-100 items-center flex-row"
       >
         <TextInput

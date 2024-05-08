@@ -1,22 +1,25 @@
-import { FlatList, Pressable, StyleSheet, Text } from "react-native";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useState } from "react";
 import { useQuery, useRealm } from "@realm/react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Workout } from "@/src/models/Workout";
-import { UserExercise } from "@/src/models/userExercise";
+
 import WorkoutListItem from "@/src/components/WorkoutListItem";
 import { Dropdown } from "react-native-element-dropdown";
+import { FontAwesome } from "@expo/vector-icons";
 
 const Workouts = () => {
-  const realm = useRealm();
   let userWorkout = useQuery(Workout);
+  const realm = useRealm();
   const [value, setValue] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-  const userExercises = useQuery(UserExercise);
-  const handleRefresh = () => {
-    setRefreshing(true);
-    setRefreshing(false);
-  };
+
   let data = [{ label: "", value: "" }];
   if (userWorkout.length !== 0) {
     data = [];
@@ -24,38 +27,69 @@ const Workouts = () => {
       data.push({ label: workout.name, value: String(index) });
     });
   }
-  const handleWorkoutSelectedChange = (e: string) => {
-    setValue(e);
-  };
   const currentWorkout = userWorkout[Number(value)];
   const flatListdata = currentWorkout.exercises;
 
+  const handleRefresh = () => {
+    setRefreshing(true);
+    setRefreshing(false);
+  };
+  const deleteWorkout = () => {
+    if (currentWorkout) {
+      realm.write(() => {
+        realm.delete(currentWorkout);
+      });
+    }
+  };
+  const handleWorkoutSelectedChange = (e: string) => {
+    setValue(e);
+  };
+
   return (
     <SafeAreaView className="w-full h-full bg-primary ">
-      <Dropdown
-        style={styles.dropdown}
-        inputSearchStyle={styles.inputSearchStyle}
-        placeholderStyle={styles.placeholderStyle}
-        selectedTextStyle={styles.selectedTextStyle}
-        data={data}
-        labelField="label"
-        valueField="value"
-        placeholder={data[0].label}
-        searchPlaceholder="Search..."
-        value={value}
-        onChange={(item) => {
-          handleWorkoutSelectedChange(item.value);
-        }}
-      />
-      <FlatList
-        refreshing={refreshing}
-        onRefresh={handleRefresh}
-        data={flatListdata}
-        keyExtractor={(userWorkout, index) => userWorkout.name + index}
-        renderItem={({ item }) => (
-          <WorkoutListItem item={item} workout={currentWorkout} />
-        )}
-      />
+      {userWorkout.length !== 0 ? (
+        <>
+          <View className="w-full flex flex-row  items-center">
+            <Text className="text-3xl w-1/2 text-gray-200 p-2">Trenning</Text>
+            <View className="w-1/2 items-end pr-3">
+              <TouchableOpacity
+                onPress={deleteWorkout}
+                className="w-1/3 bg-secondary-100 rounded-xl items-center justify-center p-2"
+              >
+                <FontAwesome name="trash" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View className="my-2">
+            <Dropdown
+              style={styles.dropdown}
+              inputSearchStyle={styles.inputSearchStyle}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              data={data}
+              labelField="label"
+              valueField="value"
+              placeholder={data[0].label}
+              searchPlaceholder="Search..."
+              value={value}
+              onChange={(item) => {
+                handleWorkoutSelectedChange(item.value);
+              }}
+            />
+          </View>
+          <FlatList
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            data={flatListdata}
+            keyExtractor={(userWorkout, index) => userWorkout.name + index}
+            renderItem={({ item }) => (
+              <WorkoutListItem item={item} workout={currentWorkout} />
+            )}
+          />
+        </>
+      ) : (
+        <></>
+      )}
     </SafeAreaView>
   );
 };
