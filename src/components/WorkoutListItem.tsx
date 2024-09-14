@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Alert,
+  Button,
+  Image,
   Modal,
   Pressable,
   Text,
@@ -13,8 +15,8 @@ import { Link } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 import { Workout } from "../models/Workout";
 import { useQuery, useRealm } from "@realm/react";
-import CustomButton from "./CustomButton";
-import FormField from "./FormField";
+import { icons } from "@/constants";
+import Swipeble from "react-native-gesture-handler/Swipeable";
 import { Exercise } from "../models/Exercise";
 
 interface WorkoutListItemProps {
@@ -24,18 +26,12 @@ interface WorkoutListItemProps {
 
 const WorkoutListItem: React.FC<WorkoutListItemProps> = ({ item, workout }) => {
   const realm = useRealm();
+  const swipeableRef = useRef<Swipeble>(null);
   const userExercises = useQuery(Exercise);
-  const [open, setOpen] = useState(false);
-  const [reps, setReps] = useState("");
-  const [weight, setWeight] = useState("");
-
-  const showToastWithGravity = () => {
-    ToastAndroid.showWithGravity(
-      `Ćwiczenie Zostało dodane ${reps} powtórzeń 
-       ${item.name}  o wadze ${weight}kg`,
-      ToastAndroid.SHORT,
-      ToastAndroid.TOP
-    );
+  const closeSwipeable = () => {
+    if (swipeableRef.current) {
+      swipeableRef.current.close();
+    }
   };
   const deleteExercise = () => {
     if (!workout) {
@@ -48,102 +44,44 @@ const WorkoutListItem: React.FC<WorkoutListItemProps> = ({ item, workout }) => {
         workout.exercises.remove(indexToDelete);
       }
     });
+    closeSwipeable();
   };
-  const addCurrentExercis = () => {
-    if (!item) {
-      return;
-    }
-    if (reps === "") {
-      return Alert.alert("Podaj Liczbę powtóżeń  !");
-    }
-    if (weight === "") {
-      return Alert.alert("Podaj wagę ciężaru  !");
-    }
-    realm.write(() => {
-      realm.create(Exercise, {
-        name: item.name,
-        weight: Number(weight),
-        repetitions: Number(reps),
-      });
-      const userEsxercisetoAdd = userExercises.filter(
-        (userExercise) => userExercise.name === item.name
-      );
-      item.exercise.push(userEsxercisetoAdd[userEsxercisetoAdd.length - 1]);
-      setOpen(false);
-      showToastWithGravity();
-    });
-  };
-  const handleOpen = () => {
-    setOpen(!open);
-    setReps("");
-    setWeight("");
-  };
-  const hendleRepsChange = (e: string) => {
-    setReps(e);
-  };
-  const hendleWeightChange = (e: string) => {
-    setWeight(e);
+  const renderRightView = () => {
+    return (
+      <View className=" h-full justify-center items-center flex">
+        <TouchableOpacity
+          onPress={deleteExercise}
+          className="flex items-center justify-center bg-red-600 w-14 h-14 rounded-2xl m-4 "
+        >
+          <AntDesign name="delete" color="black" size={24} />
+        </TouchableOpacity>
+      </View>
+    );
   };
 
   return (
-    <View>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={open}
-        onRequestClose={handleOpen}
-      >
-        <View className="relative bg-primary w-full h-full  items-center justify-center">
-          <Pressable className="absolute top-10 right-10" onPress={handleOpen}>
-            <AntDesign name="closecircle" size={40} color="white" />
+    <Swipeble renderRightActions={() => renderRightView()} ref={swipeableRef}>
+      <View>
+        <Link href={`search/${item.name}`} asChild className="mb-4">
+          <Pressable>
+            <View className="flex flex-row p-3">
+              <Image
+                source={icons.biceps}
+                className="w-12 h-12 bg-slate-400  rounded-full translate-x-5 translate-y-[-10px] z-30 "
+              ></Image>
+              <View className="bg-accent rounded-2xl w-[80%] p-2 ">
+                <Text className="text-white text-xl text-center">
+                  {item.name}
+                </Text>
+                <Text className="text-slate-400 text-xl px-2">
+                  {item.equipment} / {item.muscle}
+                </Text>
+              </View>
+            </View>
           </Pressable>
-          <FormField
-            title="Ilość powtórzeń"
-            value={reps}
-            handleChangeText={hendleRepsChange}
-            keyboardType="numeric"
-          />
-          <FormField
-            title="Waga"
-            value={weight}
-            handleChangeText={hendleWeightChange}
-            keyboardType="numeric"
-          />
-          <CustomButton
-            containerStyles="w-[90%] border border-accent mt-4"
-            title={"Dodaj "}
-            hendlePress={addCurrentExercis}
-          />
-        </View>
-      </Modal>
-      <Link href={`search/${item.name}`} asChild className="mb-4">
-        <Pressable>
-          <Text className="text-white text-xl p-2">{item.name}</Text>
-        </Pressable>
-      </Link>
-      <View className="w-full flex flex-row mb-4 items-center justify-center gap-5">
-        <TouchableOpacity
-          className={`w-[45%] items-center justify-center p-1 bg-secondary-200 rounded-xl border border-accent `}
-          onPress={handleOpen}
-          disabled={false}
-        >
-          <AntDesign name="plussquare" size={35} color="black" />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          className={`w-[45%]  items-center justify-center p-1 bg-secondary-200  border border-accent rounded-xl `}
-          onPress={deleteExercise}
-          disabled={false}
-        >
-          <AntDesign
-            className="w-full"
-            name="minussquare"
-            size={35}
-            color="black"
-          />
-        </TouchableOpacity>
+        </Link>
       </View>
-    </View>
+    </Swipeble>
   );
 };
 

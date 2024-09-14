@@ -13,9 +13,13 @@ import { Workout } from "@/src/models/Workout";
 import WorkoutListItem from "@/src/components/WorkoutListItem";
 import { Dropdown } from "react-native-element-dropdown";
 import { FontAwesome } from "@expo/vector-icons";
+import { UserExercise } from "@/src/models/userExercise";
 
 const Workouts = () => {
   let userWorkout = useQuery(Workout);
+  let useExercise = useQuery(UserExercise);
+  console.log(useExercise[0]);
+
   const realm = useRealm();
   const [value, setValue] = useState("");
   const [refreshing, setRefreshing] = useState(false);

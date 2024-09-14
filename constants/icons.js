@@ -13,8 +13,14 @@ import eye from "../assets/icons/eye.png";
 import play from "../assets/icons/play.png";
 import dumbell from "../assets/icons/dumbell.png";
 import flex from "../assets/icons/flex.png";
+import chest from "../assets/icons/chest.png";
+import biceps from "../assets/icons/biceps.png";
+import legs from "../assets/icons/legs.png";
 
 export default {
+  legs,
+  biceps,
+  chest,
   flex,
   dumbell,
   play,
